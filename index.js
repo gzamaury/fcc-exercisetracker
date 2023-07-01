@@ -170,6 +170,18 @@ app.post(
   postExerciseHandler
 );
 
+// logs endpoin functions
+const usersLogsPath = '/api/users/:_id/logs';
+
+const getUserIdParam = (req, res, next) => {
+  console.log(req.params._id);
+  req.userId = req.params._id;
+  
+  next();
+};
+
+app.get(usersLogsPath, getUserIdParam);
+
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)
