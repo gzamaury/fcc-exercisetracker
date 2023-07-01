@@ -21,6 +21,8 @@ const encodedDataHandler = bodyParser.urlencoded({extended: false});
 app.use(encodedDataHandler);
 
 const usersPath = '/api/users';
+
+// post middleware functions
 const getUsername = (req, res, next) => {
   console.log(`username: ${req.body.username}`);
   req.username = req.body.username;
@@ -57,6 +59,27 @@ app.post(
   createUser,
   postUserHandler
 );
+
+// get middleware functions
+const getAllUsers = (req, res, next) => {
+  const selectObj = "_id username";
+  
+  User.find()
+    .select(selectObj)
+    .exec((error, data) => {
+      if (error) return next(error);
+  
+      console.log(`allUsers: ${data}`);
+      req.allUsers = data;
+      
+      next();
+    });
+};
+const getUserHandler = (req, res) => {
+  res.json(req.allUsers);
+};
+
+app.get(usersPath, getAllUsers, getUserHandler);
 
 
 const listener = app.listen(process.env.PORT || 3000, () => {
