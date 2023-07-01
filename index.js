@@ -42,8 +42,21 @@ const createUser = (req, res, next) => {
     next();
   });
 }
+const postUserHandler = (req, res) => {
+  const objUser = {
+    _id: req.user_id,
+    username: req.username
+  };
 
-app.post(usersPath, getUsername, createUser);
+  res.json(objUser);
+}
+
+app.post(
+  usersPath,
+  getUsername,
+  createUser,
+  postUserHandler
+);
 
 
 const listener = app.listen(process.env.PORT || 3000, () => {
