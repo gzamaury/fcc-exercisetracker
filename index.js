@@ -111,8 +111,50 @@ const getUser = (req, res, next) => {
       next();
     });
 };
+const createExercise = (req, res, next) => {
+  excerciseObj = {
+    user: req.exerciseParams.user_id,
+    description: req.exerciseParams.description,
+    duration: req.exerciseParams.duration,
+    date: req.exerciseParams.date
+  }
+  
+  const exercise = new Exercise(excerciseObj);
+  
+  exercise.save((error, data) => {
+    if (error) return next(error);
 
-app.post(exercisePath, getExerciseParams, getUser);
+    console.log(`newExercise: ${data}`);
+    req.exerciseData = data;
+
+    next();
+  });
+};
+const addExerciseToUser = (req, res, next) => {
+  User.findById(req.exerciseData.user, (error, data) => {
+    if (error) return next(error);
+    
+    console.log(`userData: ${data}`);
+    data.log.push(req.exerciseData._id);
+  
+    data.save((error, data) => {
+      if (error) return next(error);
+  
+      console.log(`userUpdated: ${data}`);
+      req.userUpdated = data;
+      
+      next();
+    });
+  });
+};
+
+app.post(
+  exercisePath,
+  getExerciseParams,
+  getUser,
+  createExercise,
+  addExerciseToUser
+);
 
 
 const listener = app.listen(process.env.PORT || 3000, () => {
