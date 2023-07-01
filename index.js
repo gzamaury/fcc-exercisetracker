@@ -147,13 +147,27 @@ const addExerciseToUser = (req, res, next) => {
     });
   });
 };
+const postExerciseHandler = (req, res) => {
+  const exerciseDate = new Date(req.exerciseData.date);
+    
+  const resObj = {
+    _id: req.userUpdated._id,
+    username: req.userUpdated.username,
+    description: req.exerciseData.description,
+    duration: req.exerciseData.duration,
+    date: exerciseDate.toDateString()
+  };
+
+  res.json(resObj);
+};
 
 app.post(
   exercisePath,
   getExerciseParams,
   getUser,
   createExercise,
-  addExerciseToUser
+  addExerciseToUser,
+  postExerciseHandler
 );
 
 
