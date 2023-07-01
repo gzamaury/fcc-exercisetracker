@@ -98,8 +98,21 @@ const getExerciseParams = (req, res, next) => {
 
   next();
 };
+const getUser = (req, res, next) => {
+  const findObj = {_id: req.exerciseParams.user_id};
+  
+  User.find(findObj)
+    .exec((error, data) => {
+      if (error) return next(error);
 
-app.post(exercisePath, getExerciseParams);
+      console.log(`userData: ${data}`);
+      req.userData = data;
+      
+      next();
+    });
+};
+
+app.post(exercisePath, getExerciseParams, getUser);
 
 
 const listener = app.listen(process.env.PORT || 3000, () => {
