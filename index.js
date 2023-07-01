@@ -3,6 +3,11 @@ const app = express()
 const cors = require('cors')
 require('dotenv').config()
 const bodyParser = require('body-parser')
+const mongoose = require('mongoose')
+
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+const User = require('./models/user');
+const Exercise = require('./models/exercise');
 
 app.use(cors())
 app.use(express.static('public'))
@@ -18,11 +23,27 @@ app.use(encodedDataHandler);
 const usersPath = '/api/users';
 const getUsername = (req, res, next) => {
   console.log(`username: ${req.body.username}`);
-
+  req.username = req.body.username;
+  
   next();
 };
+const createUser = (req, res, next) => {
+  const userObj = {
+    username: req.username
+  };
+  const user = new User(userObj);
 
-app.post(usersPath, getUsername);
+  user.save((error, data) => {
+    if (error) return next(error);
+
+    console.log(`new user: ${data}`);
+    req.user_id = data._id;
+
+    next();
+  });
+}
+
+app.post(usersPath, getUsername, createUser);
 
 
 const listener = app.listen(process.env.PORT || 3000, () => {
