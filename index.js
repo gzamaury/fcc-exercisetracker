@@ -20,6 +20,7 @@ app.get('/', (req, res) => {
 const encodedDataHandler = bodyParser.urlencoded({extended: false});
 app.use(encodedDataHandler);
 
+// users endpoin functions
 const usersPath = '/api/users';
 
 // post middleware functions
@@ -80,6 +81,25 @@ const getUserHandler = (req, res) => {
 };
 
 app.get(usersPath, getAllUsers, getUserHandler);
+
+// exercise endpoin functions
+const exercisePath = "/api/users/:_id/exercises";
+
+const getExerciseParams = (req, res, next) => {
+  const exerciseParams = {
+    user_id: req.params._id,
+    description: req.body.description,
+    duration: req.body.duration,
+    date: req.body.date
+  };
+
+  console.log(exerciseParams);
+  req.exerciseParams = exerciseParams;
+
+  next();
+};
+
+app.post(exercisePath, getExerciseParams);
 
 
 const listener = app.listen(process.env.PORT || 3000, () => {
