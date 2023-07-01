@@ -112,14 +112,14 @@ const getUser = (req, res, next) => {
     });
 };
 const createExercise = (req, res, next) => {
-  excerciseObj = {
+  exerciseObj = {
     user: req.exerciseParams.user_id,
     description: req.exerciseParams.description,
     duration: req.exerciseParams.duration,
     date: req.exerciseParams.date
   }
   
-  const exercise = new Exercise(excerciseObj);
+  const exercise = new Exercise(exerciseObj);
   
   exercise.save((error, data) => {
     if (error) return next(error);
