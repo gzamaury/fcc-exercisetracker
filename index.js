@@ -25,7 +25,6 @@ const usersPath = '/api/users';
 
 // post middleware functions
 const getUsername = (req, res, next) => {
-  console.log(`username: ${req.body.username}`);
   req.username = req.body.username;
   
   next();
@@ -39,7 +38,6 @@ const createUser = (req, res, next) => {
   user.save((error, data) => {
     if (error) return next(error);
 
-    console.log(`new user: ${data}`);
     req.user_id = data._id;
 
     next();
@@ -70,7 +68,6 @@ const getAllUsers = (req, res, next) => {
     .exec((error, data) => {
       if (error) return next(error);
   
-      console.log(`allUsers: ${data}`);
       req.allUsers = data;
       
       next();
@@ -93,7 +90,6 @@ const getExerciseParams = (req, res, next) => {
     date: req.body.date
   };
 
-  console.log(exerciseParams);
   req.exerciseParams = exerciseParams;
 
   next();
@@ -105,7 +101,6 @@ const getUser = (req, res, next) => {
     .exec((error, data) => {
       if (error) return next(error);
 
-      console.log(`userData: ${data}`);
       req.userData = data;
       
       next();
@@ -124,7 +119,6 @@ const createExercise = (req, res, next) => {
   exercise.save((error, data) => {
     if (error) return next(error);
 
-    console.log(`newExercise: ${data}`);
     req.exerciseData = data;
 
     next();
@@ -134,13 +128,11 @@ const addExerciseToUser = (req, res, next) => {
   User.findById(req.exerciseData.user, (error, data) => {
     if (error) return next(error);
     
-    console.log(`userData: ${data}`);
     data.log.push(req.exerciseData._id);
   
     data.save((error, data) => {
       if (error) return next(error);
   
-      console.log(`userUpdated: ${data}`);
       req.userUpdated = data;
       
       next();
@@ -173,10 +165,6 @@ app.post(
 const usersLogsPath = '/api/users/:_id/logs';
 
 const getParams = (req, res, next) => {
-  console.log(`req.param: ${req.params._id}`);
-  console.log(`req.query: ${req.query.from}`);
-  console.log(`req.query: ${req.query.to}`);
-  console.log(`req.query: ${req.query.limit}`);
   req.userId = req.params._id;
   req.from = req.query.from;
   req.to = req.query.to;
@@ -209,7 +197,6 @@ const getUserLog = (req, res, next) => {
     .exec((error, data) => {
       if (error) return next(error);
 
-      console.log(`userData: ${data}`);
       req.userData = data;
       
       next();
