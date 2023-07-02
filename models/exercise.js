@@ -10,6 +10,7 @@ const exerciseSchema = new mongoose.Schema({
   date: Date,
 },
 {
+  // Includes virtuals in toJSON() and toObject() output
   toJSON: { virtuals: true },
   toObject: { virtuals: true }
 });

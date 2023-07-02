@@ -191,6 +191,7 @@ const getUserLog = (req, res, next) => {
   
   User.findOne(userObj)
     .populate(logObj)
+    .select('-__v')
     .exec((error, data) => {
       if (error) return next(error);
 
