@@ -172,11 +172,11 @@ app.post(
 // logs endpoin functions
 const usersLogsPath = '/api/users/:_id/logs';
 
-const getUserIdParam = (req, res, next) => {
-  console.log(req.params._id);
-  console.log(req.query.from);
-  console.log(req.query.to);
-  console.log(req.query.limit);
+const getParams = (req, res, next) => {
+  console.log(`req.param: ${req.params._id}`);
+  console.log(`req.query: ${req.query.from}`);
+  console.log(`req.query: ${req.query.to}`);
+  console.log(`req.query: ${req.query.limit}`);
   req.userId = req.params._id;
   req.from = req.query.from;
   req.to = req.query.to;
@@ -221,7 +221,7 @@ const getUsersLogsHandler = (req, res) => {
 
 app.get(
   usersLogsPath,
-  getUserIdParam,
+  getParams,
   getUserLog,
   getUsersLogsHandler
 );
