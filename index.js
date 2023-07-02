@@ -174,7 +174,13 @@ const usersLogsPath = '/api/users/:_id/logs';
 
 const getUserIdParam = (req, res, next) => {
   console.log(req.params._id);
+  console.log(req.query.from);
+  console.log(req.query.to);
+  console.log(req.query.limit);
   req.userId = req.params._id;
+  req.from = req.query.from;
+  req.to = req.query.to;
+  req.limit = parseInt(req.query.limit);
   
   next();
 };
@@ -182,15 +188,24 @@ const getUserLog = (req, res, next) => {
   const userObj = {
     _id: req.userId,
   };
+  const from = req.from;
+  const to = req.to;
+  const match = {};
+  if (from) {
+    match.date = { $gt: new Date(from) };
+  }
+  if (to) {
+    match.date = { ...match.date, $lt: new Date(to) };
+  }
   const logObj = {
     path: 'log',
-    match: {},
+    match: match,
+    perDocumentLimit: req.limit || 0, 
     select: "description duration date -_id"
   };
   
   User.findById(req.userId)
     .populate(logObj)
-    //.select('-id')
     .exec((error, data) => {
       if (error) return next(error);
 
