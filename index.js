@@ -179,8 +179,29 @@ const getUserIdParam = (req, res, next) => {
   
   next();
 };
+const getUserLog = (req, res, next) => {
+  const userObj = {
+    _id: req.userId,
+  };
+  const logObj = {
+    path: 'log',
+    match: {},
+    select: "description duration date formattedDate"
+  };
+  
+  User.findOne(userObj)
+    .populate(logObj)
+    .exec((error, data) => {
+      if (error) return next(error);
 
-app.get(usersLogsPath, getUserIdParam);
+      console.log(`userData: ${data}`);
+      req.userData = data;
+      
+      next();
+    });
+};
+
+app.get(usersLogsPath, getUserIdParam, getUserLog);
 
 
 const listener = app.listen(process.env.PORT || 3000, () => {
