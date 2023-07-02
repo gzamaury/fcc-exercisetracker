@@ -116,7 +116,7 @@ const createExercise = (req, res, next) => {
     user: req.exerciseParams.user_id,
     description: req.exerciseParams.description,
     duration: req.exerciseParams.duration,
-    date: req.exerciseParams.date
+    date: req.exerciseParams.date || new Date()
   }
   
   const exercise = new Exercise(exerciseObj);
