@@ -201,8 +201,16 @@ const getUserLog = (req, res, next) => {
       next();
     });
 };
+const getUsersLogsHandler = (req, res) => {
+  res.json(req.userData.toObject());
+};
 
-app.get(usersLogsPath, getUserIdParam, getUserLog);
+app.get(
+  usersLogsPath,
+  getUserIdParam,
+  getUserLog,
+  getUsersLogsHandler
+);
 
 
 const listener = app.listen(process.env.PORT || 3000, () => {

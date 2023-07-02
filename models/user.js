@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
 
 // Define a virtual property for count the exercises
 userSchema.virtual('count').get(function() {
-  return this.log.length;
+  return this.log ? this.log.length : 0;
 });
 
 module.exports = mongoose.model('User', userSchema);
