@@ -11,8 +11,20 @@ const userSchema = new mongoose.Schema({
   }]
 },
 {
-  toJSON: { virtuals: true },
-  toObject: { virtuals: true }
+  toJSON: {
+    virtuals: true,
+    versionKey: false,
+    transform: function(doc, ret) {
+      delete ret.id;
+    }
+  },
+  toObject: {
+    virtuals: true,
+    versionKey: false,
+    transform: function(doc, ret) {
+      delete ret.id;
+    }
+  }
 });
 
 // Define a virtual property for count the exercises

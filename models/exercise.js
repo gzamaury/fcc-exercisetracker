@@ -14,8 +14,18 @@ const exerciseSchema = new mongoose.Schema({
 },
 {
   // Includes getters in toJSON() and toObject() output
-  toJSON: { getters: true },
-  toObject: { getters: true }
+  toJSON: {
+    getters: true,
+    transform: function(doc, ret) {
+      delete ret.id;
+    }
+  },
+  toObject: {
+    getters: true,
+    transform: function(doc, ret) {
+      delete ret.id;
+    }
+  }
 });
 
 module.exports = mongoose.model('Exercise', exerciseSchema);

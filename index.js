@@ -185,12 +185,12 @@ const getUserLog = (req, res, next) => {
   const logObj = {
     path: 'log',
     match: {},
-    select: "description duration date"
+    select: "description duration date -_id"
   };
   
-  User.findOne(userObj)
+  User.findById(req.userId)
     .populate(logObj)
-    .select('-__v')
+    //.select('-id')
     .exec((error, data) => {
       if (error) return next(error);
 
@@ -201,7 +201,7 @@ const getUserLog = (req, res, next) => {
     });
 };
 const getUsersLogsHandler = (req, res) => {
-  res.json(req.userData.toObject());
+  res.json(req.userData);
 };
 
 app.get(
