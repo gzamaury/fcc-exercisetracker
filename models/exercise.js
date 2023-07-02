@@ -7,17 +7,15 @@ const exerciseSchema = new mongoose.Schema({
   },
   description: String,
   duration: Number,
-  date: Date,
+  date: {
+    type: Date,
+    get: (date) => new Date(date).toDateString()
+  }
 },
 {
-  // Includes virtuals in toJSON() and toObject() output
-  toJSON: { virtuals: true },
-  toObject: { virtuals: true }
-});
-
-// Define a virtual property for formatting the date
-exerciseSchema.virtual('formattedDate').get(function() {
-  return new Date(this.date).toDateString();
+  // Includes getters in toJSON() and toObject() output
+  toJSON: { getters: true },
+  toObject: { getters: true }
 });
 
 module.exports = mongoose.model('Exercise', exerciseSchema);
