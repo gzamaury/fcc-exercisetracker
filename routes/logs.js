@@ -14,7 +14,7 @@ const toJSON_opts = {
   }
 };
 
-// GET /api/users/:_id/logs
+// GET /api/users/:_id/logs?[from][&to][&limit]
 router.get('/:_id/logs', (req, res, next) => {
   const { _id } = req.params;
   const { from, to, limit } = req.query;
