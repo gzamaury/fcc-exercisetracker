@@ -1,183 +1,84 @@
-const express = require('express')
-const app = express()
-const cors = require('cors')
-require('dotenv').config()
-const bodyParser = require('body-parser')
-const mongoose = require('mongoose')
+const express = require('express');
+const app = express();
+const cors = require('cors');
+require('dotenv').config();
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 const User = require('./models/user');
 const Exercise = require('./models/exercise');
 
-app.use(cors())
-app.use(express.static('public'))
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+
+app.use(cors());
+app.use(express.static('public'));
+app.use(bodyParser.urlencoded({ extended: false }));
+
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/views/index.html')
+  res.sendFile(__dirname + '/views/index.html');
 });
 
-// Exercise Tracker Microservice
-// requires body-parser to get the POST parameters
-const encodedDataHandler = bodyParser.urlencoded({extended: false});
-app.use(encodedDataHandler);
-
-// users endpoin functions
-const usersPath = '/api/users';
-
-// post middleware functions
-const getUsername = (req, res, next) => {
-  req.username = req.body.username;
-  
-  next();
-};
-const createUser = (req, res, next) => {
-  const userObj = {
-    username: req.username
-  };
-  const user = new User(userObj);
+// Users Endpoint
+app.post('/api/users', (req, res, next) => {
+  const { username } = req.body;
+  const user = new User({ username });
 
   user.save((error, data) => {
     if (error) return next(error);
 
-    req.user_id = data._id;
-
-    next();
+    res.json({
+      _id: data._id,
+      username: data.username
+    });
   });
-}
-const postUserHandler = (req, res) => {
-  const objUser = {
-    _id: req.user_id,
-    username: req.username
-  };
+});
 
-  res.json(objUser);
-}
+app.get('/api/users', (req, res, next) => {
+  User.find({}, '_id username', (error, data) => {
+    if (error) return next(error);
 
-app.post(
-  usersPath,
-  getUsername,
-  createUser,
-  postUserHandler
-);
+    res.json(data);
+  });
+});
 
-// get middleware functions
-const getAllUsers = (req, res, next) => {
-  const selectObj = "_id username";
-  
-  User.find()
-    .select(selectObj)
-    .exec((error, data) => {
-      if (error) return next(error);
-  
-      req.allUsers = data;
-      
-      next();
-    });
-};
-const getUserHandler = (req, res) => {
-  res.json(req.allUsers);
-};
+// Exercise Endpoint
+app.post('/api/users/:_id/exercises', (req, res, next) => {
+  const { _id } = req.params;
+  const { description, duration, date } = req.body;
 
-app.get(usersPath, getAllUsers, getUserHandler);
+  const exercise = new Exercise({
+    user: _id,
+    description,
+    duration,
+    date: date || new Date()
+  });
 
-// exercise endpoin functions
-const exercisePath = "/api/users/:_id/exercises";
-
-const getExerciseParams = (req, res, next) => {
-  const exerciseParams = {
-    user_id: req.params._id,
-    description: req.body.description,
-    duration: req.body.duration,
-    date: req.body.date
-  };
-
-  req.exerciseParams = exerciseParams;
-
-  next();
-};
-const getUser = (req, res, next) => {
-  const findObj = {_id: req.exerciseParams.user_id};
-  
-  User.find(findObj)
-    .exec((error, data) => {
-      if (error) return next(error);
-
-      req.userData = data;
-      
-      next();
-    });
-};
-const createExercise = (req, res, next) => {
-  exerciseObj = {
-    user: req.exerciseParams.user_id,
-    description: req.exerciseParams.description,
-    duration: req.exerciseParams.duration,
-    date: req.exerciseParams.date || new Date()
-  }
-  
-  const exercise = new Exercise(exerciseObj);
-  
   exercise.save((error, data) => {
     if (error) return next(error);
 
-    req.exerciseData = data;
+    User.findByIdAndUpdate(
+      _id,
+      { $push: { log: data._id } },
+      { new: true },
+      (error, user) => {
+        if (error) return next(error);
 
-    next();
+        res.json({
+          _id: user._id,
+          username: user.username,
+          description: data.description,
+          duration: data.duration,
+          date: data.date
+        });
+      }
+    );
   });
-};
-const addExerciseToUser = (req, res, next) => {
-  User.findById(req.exerciseData.user, (error, data) => {
-    if (error) return next(error);
-    
-    data.log.push(req.exerciseData._id);
-  
-    data.save((error, data) => {
-      if (error) return next(error);
-  
-      req.userUpdated = data;
-      
-      next();
-    });
-  });
-};
-const postExerciseHandler = (req, res) => {
-      
-  const resObj = {
-    _id: req.userUpdated._id,
-    username: req.userUpdated.username,
-    description: req.exerciseData.description,
-    duration: req.exerciseData.duration,
-    date: req.exerciseData.date
-  };
+});
 
-  res.json(resObj);
-};
+app.get('/api/users/:_id/logs', (req, res, next) => {
+  const { _id } = req.params;
+  const { from, to, limit } = req.query;
 
-app.post(
-  exercisePath,
-  getExerciseParams,
-  getUser,
-  createExercise,
-  addExerciseToUser,
-  postExerciseHandler
-);
-
-// logs endpoin functions
-const usersLogsPath = '/api/users/:_id/logs';
-
-const getParams = (req, res, next) => {
-  req.userId = req.params._id;
-  req.from = req.query.from;
-  req.to = req.query.to;
-  req.limit = parseInt(req.query.limit);
-  
-  next();
-};
-const getUserLog = (req, res, next) => {
-  const userObj = {
-    _id: req.userId,
-  };
-  const from = req.from;
-  const to = req.to;
   const match = {};
   if (from) {
     match.date = { $gt: new Date(from) };
@@ -185,35 +86,30 @@ const getUserLog = (req, res, next) => {
   if (to) {
     match.date = { ...match.date, $lt: new Date(to) };
   }
-  const logObj = {
-    path: 'log',
-    match: match,
-    perDocumentLimit: req.limit || 0, 
-    select: "description duration date -_id"
+
+  const toJSONOpts = {
+    virtuals: true,
+    getters: true,
+    transform: function (doc, ret) {
+      delete ret.id;
+    }
   };
   
-  User.findById(req.userId)
-    .populate(logObj)
+  User.findById(_id)
+    .select('_id username log')
+    .populate({
+      path: 'log',
+      match,
+      options: { limit: parseInt(limit) || 0 },
+      select: 'description duration date'
+    })
     .exec((error, data) => {
       if (error) return next(error);
 
-      req.userData = data;
-      
-      next();
+      res.json(data.toJSON(toJSONOpts));
     });
-};
-const getUsersLogsHandler = (req, res) => {
-  res.json(req.userData);
-};
-
-app.get(
-  usersLogsPath,
-  getParams,
-  getUserLog,
-  getUsersLogsHandler
-);
-
+});
 
 const listener = app.listen(process.env.PORT || 3000, () => {
-  console.log('Your app is listening on port ' + listener.address().port)
-})
+  console.log('Your app is listening on port ' + listener.address().port);
+});
