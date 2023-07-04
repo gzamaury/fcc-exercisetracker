@@ -5,6 +5,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import path from 'path';
+import swaggerUi from 'swagger-ui-express';
+import YAML from 'yamljs';
 
 import usersRouter from './routes/users.js';
 import exercisesRouter from './routes/exercises.js';
@@ -15,6 +17,7 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const app = express();
+const swaggerDocument = YAML.load('./openapi.yaml');
 
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
@@ -25,6 +28,7 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'index.html'));
