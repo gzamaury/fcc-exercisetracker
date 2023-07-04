@@ -1,5 +1,6 @@
 export default {
   testEnvironment: 'node',
-  setupFiles: ['./test-setup.js'],
+  setupFiles: ['./jest-setup.js'],
+  setupFilesAfterEnv: ['./jest-after.js'],
   testMatch: ['**/tests/**/*.test.js'],
 };
