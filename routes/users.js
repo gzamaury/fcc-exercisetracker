@@ -1,29 +1,32 @@
-const express = require('express');
+import express from 'express';
+import User from '../models/user.js';
+
 const router = express.Router();
-const User = require('../models/user');
 
 // POST /api/users
-router.post('/', (req, res, next) => {
-  const { username } = req.body;
-  const user = new User({ username });
-
-  user.save((error, data) => {
-    if (error) return next(error);
+router.post('/', async (req, res, next) => {
+  try {
+    const { username } = req.body;
+    const user = new User({ username });
+    const savedUser = await user.save();
 
     res.json({
-      _id: data._id,
-      username: data.username
+      _id: savedUser._id,
+      username: savedUser.username
     });
-  });
+  } catch (error) {
+    next(error);
+  }
 });
 
 // GET /api/users
-router.get('/', (req, res, next) => {
-  User.find({}, '_id username', (error, data) => {
-    if (error) return next(error);
-
-    res.json(data);
-  });
+router.get('/', async (req, res, next) => {
+  try {
+    const users = await User.find({}, '_id username');
+    res.json(users);
+  } catch (error) {
+    next(error);
+  }
 });
 
-module.exports = router;
+export default router;
