@@ -1,32 +1,43 @@
-const express = require('express');
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import mongoose from 'mongoose';
+import path from 'path';
+
+import User from './models/user.js';
+import Exercise from './models/exercise.js';
+
+import usersRouter from './routes/users.js';
+import exercisesRouter from './routes/exercises.js';
+import logsRouter from './routes/logs.js';
+
+dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 const app = express();
-const cors = require('cors');
-require('dotenv').config();
-const mongoose = require('mongoose');
 
-const User = require('./models/user');
-const Exercise = require('./models/exercise');
-
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
-
-// routers
-const usersRouter = require('./routes/users');
-const exercisesRouter = require('./routes/exercises');
-const logsRouter = require('./routes/logs');
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
 
 app.use(cors());
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/views/index.html');
+  res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
 
 app.use('/api/users', usersRouter);
 app.use('/api/users', exercisesRouter);
 app.use('/api/users', logsRouter);
 
-const listener = app.listen(process.env.PORT || 3000, () => {
-  console.log('Your app is listening on port ' + listener.address().port);
+const port = process.env.PORT || 3000;
+const server = app.listen(port, () => {
+  console.log('Your app is listening on port ' + port);
 });

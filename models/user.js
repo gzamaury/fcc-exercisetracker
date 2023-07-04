@@ -1,6 +1,8 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
-const userSchema = new mongoose.Schema(
+const { Schema } = mongoose;
+
+const userSchema = new Schema(
   {
     username: {
       type: String,
@@ -8,7 +10,7 @@ const userSchema = new mongoose.Schema(
     },
     log: [
       {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'Exercise'
       }
     ]
@@ -21,4 +23,4 @@ userSchema.virtual('count').get(function () {
 
 const User = mongoose.model('User', userSchema);
 
-module.exports = User;
+export default User;
