@@ -6,9 +6,6 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import path from 'path';
 
-import User from './models/user.js';
-import Exercise from './models/exercise.js';
-
 import usersRouter from './routes/users.js';
 import exercisesRouter from './routes/exercises.js';
 import logsRouter from './routes/logs.js';
