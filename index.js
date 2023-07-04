@@ -18,7 +18,7 @@ const app = express();
 
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
 });
 
 app.use(cors());
@@ -35,6 +35,12 @@ app.use('/api/users', exercisesRouter);
 app.use('/api/users', logsRouter);
 
 const port = process.env.PORT || 3000;
-const server = app.listen(port, () => {
-  console.log('Your app is listening on port ' + port);
-});
+let server = app;
+
+if (process.env.NODE_ENV !== 'test') {
+  server = app.listen(port, () => {
+    console.log('Your app is listening on port ' + port);
+  });
+}
+
+export default server;
