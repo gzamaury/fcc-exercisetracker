@@ -9,10 +9,10 @@ const router = express.Router();
 // https://mongoosejs.com/docs/6.x/docs/api/schematype.html#schematype_SchemaType-transform
 const toJSON_opts = {
   virtuals: true,
-  getters: true,
-  transform: function (doc, ret) {
-    delete ret.id;
-  }
+  // getters: true,
+  // transform: function (doc, ret) {
+  //   delete ret.id;
+  // }
 };
 
 // GET /api/users/:_id/logs?[from][&to][&limit]
