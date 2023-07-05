@@ -14,6 +14,14 @@ const userSchema = new Schema(
         ref: 'Exercise'
       }
     ]
+  },
+  {
+    toJSON: {
+      virtuals: false,
+      transform: function (doc, ret) {
+        delete ret.id;
+      }
+    }
   }
 );
 

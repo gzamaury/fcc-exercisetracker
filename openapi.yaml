@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Exercise Tracker API
+  title: FCC - Exercise Tracker API
   version: 1.0.0
   description: API for tracking exercises
 
@@ -19,6 +19,8 @@ paths:
                   type: string
               required:
                 - username
+              example:
+                  username: John Kamanay
       responses:
         '200':
           description: User created successfully
@@ -32,8 +34,8 @@ paths:
                   username:
                     type: string
                 example:
-                  _id: abc123
-                  username: john_doe
+                  _id: 64a4d8cb87b3345dc0a880a4
+                  username: John Kamanay
     get:
       summary: Get all users
       responses:
@@ -111,8 +113,10 @@ components:
         username:
           type: string
       example:
-        _id: abc123
-        username: john_doe
+        - _id: 64a4fa7ce97e7fe7902bd224
+          username: Amaury Gz
+        - _id: 64a5037f292484ecea105a88
+          username: Bethy
 
     ExerciseInput:
       type: object
@@ -146,8 +150,8 @@ components:
           type: string
           format: date
       example:
-        _id: abc123
-        username: john_doe
+        _id: 64a4fa7ce97e7fe7902bd224
+        username: Amaury Gz
         description: Running
         duration: 30
         date: 2023-07-03
@@ -163,16 +167,15 @@ components:
           type: array
               items:
                 $ref: '#/components/schemas/ExerciseResponse'
-          example:
-            _id: abc123
-            username: john_doe
-            log:
-              - _id: xyz789
-                description: Walking
-                duration: 45
-                date: 2023-07-02
-              - _id: pqr456
-                description: Cycling
-                duration: 60
-                date: 2023-07-01
+      example:
+        _id: 64a4fa7ce97e7fe7902bd224
+        username: Amaury Gz
+        log:
+          - description: Cycling
+            duration: 30
+            date: Mon Jul 03 2023
+          - description: Walking
+            duration: 45
+            date: Tue Jul 04 2023
+        count: 2
         
