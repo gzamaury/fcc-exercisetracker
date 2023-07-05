@@ -34,6 +34,12 @@ app.use('/api/users', usersRouter);
 app.use('/api/users', exercisesRouter);
 app.use('/api/users', logsRouter);
 
+// Error handler
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ error: 'Internal Server Error' });
+});
+
 const port = process.env.PORT || 3000;
 let server = app;
 

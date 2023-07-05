@@ -39,6 +39,10 @@ router.get('/:_id/logs', async (req, res, next) => {
       })
       .exec();
 
+    if (!user) {
+      res.status(404).json({ error: 'User not found' });
+    }
+
     res.json(user.toJSON(toJSON_opts));
   } catch (error) {
     next(error);

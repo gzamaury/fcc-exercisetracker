@@ -7,15 +7,15 @@ const exerciseSchema = new Schema(
     user: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: true
+      required: [true, 'User is required']
     },
     description: {
       type: String,
-      required: true
+      required: [true, 'Description is required']
     },
     duration: {
       type: Number,
-      required: true
+      required: [true, 'Duration is required']
     },
     date: {
       type: Date,
