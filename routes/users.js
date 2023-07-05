@@ -7,6 +7,11 @@ const router = express.Router();
 router.post('/', async (req, res, next) => {
   try {
     const { username } = req.body;
+
+    if (!username) {
+      return res.status(400).json({ error: 'Missing required parameter: username' });
+    }
+    
     const user = new User({ username });
     const savedUser = await user.save();
 

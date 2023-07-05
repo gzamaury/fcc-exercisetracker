@@ -1,0 +1,178 @@
+openapi: 3.0.3
+info:
+  title: Exercise Tracker API
+  version: 1.0.0
+  description: API for tracking exercises
+
+paths:
+  /api/users:
+    post:
+      summary: Create a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+              required:
+                - username
+      responses:
+        '200':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                  username:
+                    type: string
+                example:
+                  _id: abc123
+                  username: john_doe
+    get:
+      summary: Get all users
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+
+  /api/users/{userId}/exercises:
+    post:
+      summary: Create a new exercise
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExerciseInput'
+      responses:
+        '200':
+          description: Exercise created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExerciseResponse'
+
+  /api/users/{userId}/logs:
+    get:
+      summary: Get user exercise logs
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: User exercise logs retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserLogs'
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+        username:
+          type: string
+      example:
+        _id: abc123
+        username: john_doe
+
+    ExerciseInput:
+      type: object
+      properties:
+        description:
+          type: string
+        duration:
+          type: integer
+          minimum: 1
+        date:
+          type: string
+          format: date
+      example:
+        description: Running
+        duration: 30
+        date: 2023-07-03
+
+    ExerciseResponse:
+      type: object
+      properties:
+        _id:
+          type: string
+        username:
+          type: string
+        description:
+          type: string
+        duration:
+          type: integer
+          minimum: 1
+        date:
+          type: string
+          format: date
+      example:
+        _id: abc123
+        username: john_doe
+        description: Running
+        duration: 30
+        date: 2023-07-03
+
+    UserLogs:
+      type: object
+      properties:
+        _id:
+          type: string
+        username:
+          type: string
+        log:
+          type: array
+              items:
+                $ref: '#/components/schemas/ExerciseResponse'
+          example:
+            _id: abc123
+            username: john_doe
+            log:
+              - _id: xyz789
+                description: Walking
+                duration: 45
+                date: 2023-07-02
+              - _id: pqr456
+                description: Cycling
+                duration: 60
+                date: 2023-07-01
+        
